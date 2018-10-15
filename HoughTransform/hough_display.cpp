@@ -83,11 +83,11 @@ void* CPU_thread(void *)
 	{
 		show.data[ii] = (unsigned char)accumulator.data[ii];
 	}
-	cv::cvtColor(show, show, COLOR_GRAY2BGR);
-
+	cvtColor(show, show, COLOR_GRAY2BGR);
+	resize(show,show,Size(frame.cols,frame.rows));
 
 	vector<Vec3f> circles_cpu;
-	HoughCircles( mask, circles_cpu, CV_HOUGH_GRADIENT, dp, minDist, cannythres, votesthres, minRad, maxRad );   
+	HoughCircles(mask, circles_cpu, CV_HOUGH_GRADIENT, dp, minDist, cannythres, votesthres, minRad, maxRad );   
 	// Draw the circles detected
 	for( size_t i = 0; i < circles_cpu.size(); i++ )
 	{
@@ -95,8 +95,22 @@ void* CPU_thread(void *)
 		int radius = cvRound(circles_cpu[i][2]);  
 		circle( dst_cpu, center, radius, Scalar(0,0,255), 3, 8, 0 );// circle outline
 	}
-	imwrite("image/hough.png", show);
-	imwrite("image/final.png", dst_cpu);
+
+	Mat drawing = Mat::zeros(Size(frame.cols*3,frame.rows),CV_8UC3);
+	ostringstream ss,ss2,ss3;
+	ss << "Original Image";
+	putText(frame, ss.str(), Point(10,20), FONT_HERSHEY_SIMPLEX, 0.7, Scalar(0,255,255), 2);
+	ss2 << "Hough Space";
+	putText(show, ss2.str(), Point(10,20), FONT_HERSHEY_SIMPLEX, 0.7, Scalar(0,255,255), 2);
+	ss3 << "Result";
+	putText(dst_cpu, ss3.str(), Point(10,20), FONT_HERSHEY_SIMPLEX, 0.7, Scalar(0,255,255), 2);
+	vector<Mat> pic;
+	pic.push_back(frame); 
+	pic.push_back(show); 
+	pic.push_back(dst_cpu);
+	hconcat(pic,drawing);
+	imwrite("image/hough.png", drawing); // exporting image
+	pic.clear();
 	return 0;
 }
 
