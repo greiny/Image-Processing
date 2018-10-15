@@ -12,7 +12,7 @@ Compile : g++ -std=c++11 file_name.cpp -o program $(pkg-config --libs --cflags o
 
 
 3. Hough Circle Transform
-<img src="HoughTransform/image/hough.jpg" align="center" width="600">
+<img src="HoughTransform/image/hough.png" align="center" width="600">
 
 
 4. (Continued)
