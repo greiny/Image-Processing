@@ -51,7 +51,7 @@ void* CPU_thread(void *)
 	float time = 0, fps = 0;
    	auto t0 = std::chrono::high_resolution_clock::now();
 
-	frame = imread("test.png");
+	frame = imread("image/test.png");
 	cv::cvtColor(frame, src, COLOR_BGR2GRAY);
 	cv::cvtColor(src, dst_cpu, COLOR_GRAY2BGR);
 	// Reduce the noise so we avoid false circle detection
@@ -71,8 +71,6 @@ void* CPU_thread(void *)
 		    {
 				int a = x-floor(R*cos(d*M_PI/180));
 		       		int b = y-floor(R*sin(d*M_PI/180));
-				//cout <<(int)accumulator.data[(b+R)*accumulator.cols+(a+R)]<< endl;
-				//accumulator.at<double>(b+R, a+R) = accumulator.at<double>(b+R, a+R) + 1;
 				accumulator.data[(b+R)+(a+R)*accumulator.cols] += 10;
 		    }
 		}
@@ -83,12 +81,10 @@ void* CPU_thread(void *)
 	minMaxLoc(accumulator, &minVal, &maxVal); //find minimum and maximum intensities
 	for(int ii=0; ii < accumulator.rows*accumulator.cols; ii++)
 	{
-		//show.data[ii] = (unsigned char)(accumulator.data[ii]/maxVal*255.0);
 		show.data[ii] = (unsigned char)accumulator.data[ii];
 	}
-cout << show << endl;
 	cv::cvtColor(show, show, COLOR_GRAY2BGR);
-	//imshow("detected hough", show);
+
 
 	vector<Vec3f> circles_cpu;
 	HoughCircles( mask, circles_cpu, CV_HOUGH_GRADIENT, dp, minDist, cannythres, votesthres, minRad, maxRad );   
@@ -97,16 +93,10 @@ cout << show << endl;
 	{
 		Point center(cvRound(circles_cpu[i][0]), cvRound(circles_cpu[i][1]));
 		int radius = cvRound(circles_cpu[i][2]);  
-			cout << radius << endl;
 		circle( dst_cpu, center, radius, Scalar(0,0,255), 3, 8, 0 );// circle outline
 	}
-	//imshow("detected circle", dst_cpu);
-
-	//imwrite("frame.png", frame);
-	//imwrite("gray.png", src);
-	//imwrite("edge.png", mask);
-	imwrite("hough.png", show);
-	imwrite("final.png", dst_cpu);
+	imwrite("image/hough.png", show);
+	imwrite("image/final.png", dst_cpu);
 	return 0;
 }
 
